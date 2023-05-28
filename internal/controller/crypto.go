@@ -22,10 +22,6 @@ func setupCryptoRoutes(opts *routerOptions) {
 	opts.router.GET("/rate", wrapHandler(opts, cryptoRoutes.getRate))
 }
 
-type getRateResponseBody struct {
-	Rate float64 `json:"rate"`
-}
-
 // TODO: generate swagger
 func (r *cryptoRoutes) getRate(c *gin.Context) (interface{}, *httpResponseError) {
 	logger := r.logger.Named("getRate")
@@ -46,7 +42,5 @@ func (r *cryptoRoutes) getRate(c *gin.Context) (interface{}, *httpResponseError)
 	logger = logger.With("rate", rate)
 
 	logger.Info("successfully got rate")
-	return getRateResponseBody{
-		Rate: rate,
-	}, nil
+	return rate, nil
 }

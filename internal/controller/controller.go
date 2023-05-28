@@ -27,7 +27,7 @@ type routerContext struct {
 }
 
 type routerOptions struct {
-	router   *gin.Engine
+	router   *gin.RouterGroup
 	services service.Services
 	cfg      *config.Config
 	logger   logging.Logger
@@ -37,7 +37,7 @@ func New(opts *Options) http.Handler {
 	r := gin.Default()
 
 	routerOptions := routerOptions{
-		router:   r,
+		router:   r.Group("/api"),
 		services: opts.Services,
 		cfg:      opts.Config,
 		logger:   opts.Logger.Named("HTTPController"),
