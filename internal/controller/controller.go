@@ -51,11 +51,10 @@ func New(opts *Options) http.Handler {
 
 // httpResponseError provides a base error type for all errors.
 type httpResponseError struct {
-	Type          httpErrType `json:"-"`
-	Message       string      `json:"message"`
-	Code          string      `json:"code,omitempty"`
-	Details       interface{} `json:"details,omitempty"`
-	InvalidFields interface{} `json:"invalidFields,omitempty"`
+	Type    httpErrType `json:"-"`
+	Message string      `json:"message"`
+	Code    int         `json:"code"`
+	Details interface{} `json:"details,omitempty"`
 }
 
 // httpErrType is used to define error type.
@@ -113,7 +112,7 @@ func wrapHandler(options *routerOptions, handler func(c *gin.Context) (interface
 				c.AbortWithStatusJSON(http.StatusInternalServerError, err)
 			} else {
 				logger.Info("client error")
-				c.AbortWithStatusJSON(http.StatusUnprocessableEntity, err)
+				c.AbortWithStatusJSON(err.Code, err)
 			}
 			return
 		}

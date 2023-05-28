@@ -5,11 +5,11 @@ import "strings"
 // Err implements the Error interface with error marshaling.
 type Err struct {
 	Message string            `json:"message"`
-	Code    string            `json:"code"`
+	Code    int               `json:"code"`
 	Details map[string]string `json:"details"`
 }
 
-func New(message, code string) *Err {
+func New(message string, code int) *Err {
 	return &Err{Message: message, Code: code}
 }
 
@@ -33,10 +33,10 @@ func GetDetails(err error) map[string]string {
 }
 
 // GetCode returns code of given error or empty string if error is not custom
-func GetCode(err error) string {
+func GetCode(err error) int {
 	v, ok := err.(*Err)
 	if !ok {
-		return ""
+		return 500
 	}
 	return v.Code
 }

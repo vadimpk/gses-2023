@@ -47,14 +47,14 @@ func (s *emailService) Subscribe(ctx context.Context, email string) error {
 	return nil
 }
 
-func (s *emailService) SendRateInfo(ctx context.Context) error {
+func (s *emailService) SendRateInfo(ctx context.Context) (*SendRateInfoOutput, error) {
 	logger := s.logger.Named("SendRateInfo").
 		WithContext(ctx)
 
 	emails, err := s.storages.Email.List(ctx)
 	if err != nil {
 		logger.Error("failed to get emails from storage", "err", err)
-		return fmt.Errorf("failed to get emails from storage: %w", err)
+		return nil, fmt.Errorf("failed to get emails from storage: %w", err)
 	}
 
 	rate, err := s.cryptoService.GetRate(ctx, &GetRateOptions{
@@ -63,9 +63,10 @@ func (s *emailService) SendRateInfo(ctx context.Context) error {
 	})
 	if err != nil {
 		logger.Error("failed to get rate", "err", err)
-		return fmt.Errorf("failed to get rate: %w", err)
+		return nil, fmt.Errorf("failed to get rate: %w", err)
 	}
 
+	var failedEmails []string
 	for _, email := range emails {
 		err = s.apis.Email.Send(ctx, &SendOptions{
 			To:      email,
@@ -74,9 +75,18 @@ func (s *emailService) SendRateInfo(ctx context.Context) error {
 		})
 		if err != nil {
 			logger.Error(fmt.Sprintf("failed to send email to: %s", email), "err", err)
+			failedEmails = append(failedEmails, email)
 		}
 	}
 
+	if len(failedEmails) == len(emails) {
+		return &SendRateInfoOutput{
+			FailedEmails: failedEmails,
+		}, ErrSendRateInfoFailedToSendToAllEmails
+	}
+
 	logger.Info("successfully sent rate info")
-	return nil
+	return &SendRateInfoOutput{
+		FailedEmails: failedEmails,
+	}, nil
 }

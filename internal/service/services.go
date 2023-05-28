@@ -32,11 +32,19 @@ type EmailService interface {
 	// Subscribe subscribes email to newsletter.
 	Subscribe(ctx context.Context, email string) error
 	// SendRateInfo sends emails to all subscribers about current rate info.
-	SendRateInfo(ctx context.Context) error
+	SendRateInfo(ctx context.Context) (*SendRateInfoOutput, error)
 }
 
 var (
-	ErrSubscribeAlreadySubscribed = errs.New("already subscribed", "already_subscribed")
+	ErrSendRateInfoFailedToSendToAllEmails = errs.New("failed to send rate info to all emails", 400)
+)
+
+type SendRateInfoOutput struct {
+	FailedEmails []string
+}
+
+var (
+	ErrSubscribeAlreadySubscribed = errs.New("already subscribed", 409)
 )
 
 // CryptoService provides business logic for crypto service.

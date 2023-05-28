@@ -51,6 +51,7 @@ func (r *emailRoutes) subscribe(c *gin.Context) (interface{}, *httpResponseError
 		if errs.IsExpected(err) {
 			logger.Info("failed to subscribe", "err", err)
 			return nil, &httpResponseError{
+				Code:    errs.GetCode(err),
 				Type:    ErrorTypeClient,
 				Message: err.Error(),
 			}
@@ -69,15 +70,20 @@ func (r *emailRoutes) subscribe(c *gin.Context) (interface{}, *httpResponseError
 	}, nil
 }
 
+type sendRateInfoResponseBody struct {
+	FailedEmails []string `json:"failed_emails"`
+}
+
 // TODO: generate swagger
 func (r *emailRoutes) sendRateInfo(c *gin.Context) (interface{}, *httpResponseError) {
 	logger := r.logger.Named("sendRateInfo")
 
-	err := r.services.Email.SendRateInfo(c.Request.Context())
+	output, err := r.services.Email.SendRateInfo(c.Request.Context())
 	if err != nil {
 		if errs.IsExpected(err) {
 			logger.Info("failed to send rate info", "err", err)
 			return nil, &httpResponseError{
+				Code:    errs.GetCode(err),
 				Type:    ErrorTypeClient,
 				Message: err.Error(),
 			}
@@ -89,7 +95,10 @@ func (r *emailRoutes) sendRateInfo(c *gin.Context) (interface{}, *httpResponseEr
 			Details: err.Error(),
 		}
 	}
+	logger = logger.With("output", output)
 
 	logger.Info("successfully sent rate info")
-	return nil, nil
+	return sendRateInfoResponseBody{
+		FailedEmails: output.FailedEmails,
+	}, nil
 }
