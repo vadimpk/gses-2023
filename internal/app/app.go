@@ -1,7 +1,9 @@
 package app
 
 import (
+	"context"
 	"github.com/vadimpk/gses-2023/config"
+	"github.com/vadimpk/gses-2023/internal/api/coinapi"
 	"github.com/vadimpk/gses-2023/internal/controller"
 	"github.com/vadimpk/gses-2023/internal/service"
 	"github.com/vadimpk/gses-2023/internal/storage/localstorage"
@@ -18,12 +20,21 @@ func Run(cfg *config.Config) {
 	logger := logging.New(cfg.Log.Level)
 
 	fileStorage := database.NewFileDB(cfg.FileStorage.BaseDirectory)
+	err := fileStorage.Ping(context.TODO())
+	if err != nil {
+		logger.Fatal("failed to init file storage", "err", err)
+	}
 
 	storages := service.Storages{
 		Email: localstorage.NewEmailStorage(fileStorage),
 	}
 
-	apis := service.APIs{}
+	apis := service.APIs{
+		Crypto: coinapi.New(&coinapi.Options{
+			ApiKey: cfg.CoinAPI.Key,
+			Logger: logger,
+		}),
+	}
 
 	serviceOptions := service.Options{
 		Storages: storages,
@@ -67,7 +78,7 @@ func Run(cfg *config.Config) {
 	}
 
 	// shutdown http server
-	err := httpServer.Shutdown()
+	err = httpServer.Shutdown()
 	if err != nil {
 		logger.Error("app - Run - httpServer.Shutdown", "err", err)
 	}

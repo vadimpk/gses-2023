@@ -1,6 +1,9 @@
 package service
 
-import "context"
+import (
+	"context"
+	"fmt"
+)
 
 type cryptoService struct {
 	serviceContext
@@ -17,9 +20,19 @@ func NewCryptoService(opts *Options) *cryptoService {
 	}
 }
 
-func (s *cryptoService) GetRate(ctx context.Context, opts *GetRateOptions) (int, error) {
-	logger := s.logger.Named("GetRate").WithContext(ctx)
+func (s *cryptoService) GetRate(ctx context.Context, opts *GetRateOptions) (float64, error) {
+	logger := s.logger.Named("GetRate").
+		WithContext(ctx).
+		With("opts", opts)
+
+	// TODO: validate opts
+
+	rate, err := s.apis.Crypto.GetRate(ctx, opts)
+	if err != nil {
+		logger.Error("failed to get rate", "err", err)
+		return 0, fmt.Errorf("failed to get rate from api: %w", err)
+	}
 
 	logger.Info("successfully got rate")
-	return 0, nil
+	return rate, nil
 }

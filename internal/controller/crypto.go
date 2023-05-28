@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
+	"github.com/vadimpk/gses-2023/internal/service"
 )
 
 type cryptoRoutes struct {
@@ -18,9 +18,34 @@ func setupCryptoRoutes(opts *routerOptions) {
 		},
 	}
 
-	opts.router.GET("/rate", cryptoRoutes.getRate)
+	opts.router.GET("/rate", wrapHandler(opts, cryptoRoutes.getRate))
 }
 
-func (r *cryptoRoutes) getRate(c *gin.Context) {
-	c.Status(http.StatusOK)
+type getRateResponseBody struct {
+	Rate float64 `json:"rate"`
+}
+
+// TODO: generate swagger
+func (r *cryptoRoutes) getRate(c *gin.Context) (interface{}, *httpResponseError) {
+	logger := r.logger.Named("getRate")
+
+	rate, err := r.services.Crypto.GetRate(c.Request.Context(), &service.GetRateOptions{
+		CryptoCurrency: "BTC", // TODO: get from query
+		Currency:       "UAH", // TODO: get from query
+	})
+	if err != nil {
+		// TODO: check if err is expected and return appropriate error type (client/server)
+		logger.Error("failed to get rate", "err", err)
+		return nil, &httpResponseError{
+			Type:    ErrorTypeServer,
+			Message: "failed to get rate",
+			Details: err.Error(),
+		}
+	}
+	logger = logger.With("rate", rate)
+
+	logger.Info("successfully got rate")
+	return getRateResponseBody{
+		Rate: rate,
+	}, nil
 }

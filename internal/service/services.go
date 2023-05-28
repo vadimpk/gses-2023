@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"github.com/vadimpk/gses-2023/config"
+	"github.com/vadimpk/gses-2023/pkg/errs"
 	"github.com/vadimpk/gses-2023/pkg/logging"
 )
 
@@ -33,10 +34,14 @@ type EmailService interface {
 	SendRateInfo(ctx context.Context) error
 }
 
+var (
+	ErrSubscribeAlreadySubscribed = errs.New("already subscribed", "already_subscribed")
+)
+
 // CryptoService provides business logic for crypto service.
 type CryptoService interface {
 	// GetRate returns current rate for crypto currency.
-	GetRate(ctx context.Context, opts *GetRateOptions) (int, error)
+	GetRate(ctx context.Context, opts *GetRateOptions) (float64, error)
 }
 
 type GetRateOptions struct {

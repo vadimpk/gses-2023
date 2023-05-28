@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
+	"github.com/vadimpk/gses-2023/pkg/errs"
 )
 
 type emailRoutes struct {
@@ -18,14 +18,77 @@ func setupEmailRoutes(opts *routerOptions) {
 		},
 	}
 
-	opts.router.POST("/subscribe", emailRoutes.subscribe)
-	opts.router.POST("/sendEmails", emailRoutes.sendRateInfo)
+	opts.router.POST("/subscribe", wrapHandler(opts, emailRoutes.subscribe))
+	opts.router.POST("/sendEmails", wrapHandler(opts, emailRoutes.sendRateInfo)) // TODO: add auth
 }
 
-func (r *emailRoutes) subscribe(c *gin.Context) {
-	c.Status(http.StatusOK)
+type subscribeRequestBody struct {
+	Email string `form:"email" binding:"required,email"`
 }
 
-func (r *emailRoutes) sendRateInfo(c *gin.Context) {
-	c.Status(http.StatusOK)
+type subscribeResponseBody struct {
+	Email string `json:"email"`
+}
+
+// TODO: generate swagger
+func (r *emailRoutes) subscribe(c *gin.Context) (interface{}, *httpResponseError) {
+	logger := r.logger.Named("subscribe")
+
+	var query subscribeRequestBody
+	if err := c.ShouldBindQuery(&query); err != nil {
+		logger.Info("failed to bind query", "err", err)
+		return nil, &httpResponseError{
+			Type:    ErrorTypeClient,
+			Message: "failed to bind query",
+			Details: err.Error(),
+		}
+	}
+	logger = logger.With("query", query)
+
+	err := r.services.Email.Subscribe(c.Request.Context(), query.Email)
+	if err != nil {
+		if errs.IsExpected(err) {
+			logger.Info("failed to subscribe", "err", err)
+			return nil, &httpResponseError{
+				Type:    ErrorTypeClient,
+				Message: err.Error(),
+			}
+		}
+		logger.Error("failed to subscribe", "err", err)
+		return nil, &httpResponseError{
+			Type:    ErrorTypeServer,
+			Message: "failed to subscribe",
+			Details: err.Error(),
+		}
+	}
+
+	logger.Info("successfully subscribed")
+	return subscribeResponseBody{
+		Email: query.Email,
+	}, nil
+}
+
+// TODO: generate swagger
+func (r *emailRoutes) sendRateInfo(c *gin.Context) (interface{}, *httpResponseError) {
+	logger := r.logger.Named("sendRateInfo")
+
+	err := r.services.Email.SendRateInfo(c.Request.Context())
+	if err != nil {
+		if errs.IsExpected(err) {
+			logger.Info("failed to send rate info", "err", err)
+			return nil, &httpResponseError{
+				Type:    ErrorTypeClient,
+				Message: err.Error(),
+			}
+		}
+		logger.Error("failed to send rate info", "err", err)
+		return nil, &httpResponseError{
+			Type:    ErrorTypeServer,
+			Message: "failed to send rate info",
+			Details: err.Error(),
+		}
+	}
+
+	logger.Info("successfully sent rate info")
+	return nil, nil
 }

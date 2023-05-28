@@ -14,6 +14,7 @@ type (
 		App
 		Log
 		FileStorage
+		CoinAPI
 	}
 
 	// App - represent application configuration.
@@ -28,7 +29,12 @@ type (
 
 	// FileStorage - represents file storage configuration.
 	FileStorage struct {
-		BaseDirectory string `env:"GSES_FILE_STORAGE_BASE_DIRECTORY" env-default:"/local/files/"`
+		BaseDirectory string `env:"GSES_FILE_STORAGE_BASE_DIRECTORY" env-default:"local/files/"`
+	}
+
+	// CoinAPI - represents configuration for account at https://coinapi.io.
+	CoinAPI struct {
+		Key string `env:"GSES_COIN_API_KEY" env-default:"F9326003-515F-4655-A9A8-2ACF5D8E900F"`
 	}
 )
 
