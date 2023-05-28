@@ -3,13 +3,15 @@ package controller
 import (
 	"bytes"
 	"fmt"
+	"net/http"
+	"runtime/debug"
+
 	"github.com/DataDog/gostackparse"
 	"github.com/gin-gonic/gin"
+
 	"github.com/vadimpk/gses-2023/config"
 	"github.com/vadimpk/gses-2023/internal/service"
 	"github.com/vadimpk/gses-2023/pkg/logging"
-	"net/http"
-	"runtime/debug"
 )
 
 type Options struct {

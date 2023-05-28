@@ -14,9 +14,9 @@ type EmailAPI interface {
 }
 
 type SendOptions struct {
-	To    string
-	Title string
-	Body  string
+	To      string
+	Subject string
+	Body    string
 }
 
 // CryptoAPI provides methods for getting crypto rates that are used in CryptoService and

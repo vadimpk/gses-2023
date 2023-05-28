@@ -2,8 +2,9 @@ package localstorage
 
 import (
 	"context"
-	"github.com/vadimpk/gses-2023/pkg/database"
 	"strings"
+
+	"github.com/vadimpk/gses-2023/pkg/database"
 )
 
 type emailStorage struct {

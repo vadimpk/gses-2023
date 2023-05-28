@@ -3,9 +3,10 @@ package coinapi
 import (
 	"context"
 	"fmt"
-	"github.com/vadimpk/gses-2023/internal/service"
 	"net/http"
 	"strings"
+
+	"github.com/vadimpk/gses-2023/internal/service"
 )
 
 type getRateResponseBody struct {

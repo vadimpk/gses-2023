@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"github.com/vadimpk/gses-2023/config"
 	"github.com/vadimpk/gses-2023/pkg/errs"
 	"github.com/vadimpk/gses-2023/pkg/logging"

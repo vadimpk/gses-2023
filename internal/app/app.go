@@ -2,6 +2,12 @@ package app
 
 import (
 	"context"
+	"github.com/vadimpk/gses-2023/internal/api/mailgun"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"github.com/vadimpk/gses-2023/config"
 	"github.com/vadimpk/gses-2023/internal/api/coinapi"
 	"github.com/vadimpk/gses-2023/internal/controller"
@@ -10,10 +16,6 @@ import (
 	"github.com/vadimpk/gses-2023/pkg/database"
 	"github.com/vadimpk/gses-2023/pkg/httpserver"
 	"github.com/vadimpk/gses-2023/pkg/logging"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 func Run(cfg *config.Config) {
@@ -32,6 +34,12 @@ func Run(cfg *config.Config) {
 	apis := service.APIs{
 		Crypto: coinapi.New(&coinapi.Options{
 			ApiKey: cfg.CoinAPI.Key,
+			Logger: logger,
+		}),
+		Email: mailgun.New(&mailgun.Options{
+			Domain: cfg.MailGun.Domain,
+			APIKey: cfg.MailGun.Key,
+			From:   cfg.MailGun.From,
 			Logger: logger,
 		}),
 	}
