@@ -14,11 +14,10 @@ This repository contains the code for a simple API developed for the Genesis Sof
 
 ### Prerequisites
 
-1. Get API key from [CoinAPI](https://www.coinapi.io/). Or you can use my API key, which is already in the code.
-2. Sign up for [MailGun](https://www.mailgun.com/) account. You will need to verify your domain and get your API key.
-   Currently the code is configured to use my domain and API key, but you won't be able to send emails from my domain.
-   So you will need to change the domain and API key in the code.
-3. Create a `.env` file in the root directory of the project and add the following variables:
+1. Create `local/files` directory in the root directory of the project. This is where the database file will be stored.
+2. Get API key from [CoinAPI](https://www.coinapi.io/). Or you can use my API key, which is already in the code.
+3. Sign up for [MailGun](https://www.mailgun.com/) account. You will need to verify your domain and get your API key.
+4. Create a `.env` file in the root directory of the project and add the following variables:
 
 ```
 GSES_COIN_API_KEY=<your_coin_api_key>
