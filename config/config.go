@@ -30,7 +30,7 @@ type (
 
 	// FileStorage - represents file storage configuration.
 	FileStorage struct {
-		BaseDirectory string `env:"GSES_FILE_STORAGE_BASE_DIRECTORY" env-default:"local/files/"`
+		BaseDirectory string `env:"GSES_FILE_STORAGE_BASE_DIRECTORY" env-default:"local/"`
 	}
 
 	// CoinAPI - represents configuration for account at https://coinapi.io.
