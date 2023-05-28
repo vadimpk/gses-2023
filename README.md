@@ -8,16 +8,15 @@ This repository contains the code for a simple API developed for the Genesis Sof
 
 1. Clone the repository: `git clone https://github.com/vadimpk/gses-2023.git`
 2. Navigate to the project directory: `cd gses-2023`
-3. Run `make run`
 
 ## Usage
 
 ### Prerequisites
 
-1. Create `local/files` directory in the root directory of the project. This is where the database file will be stored.
-2. Get API key from [CoinAPI](https://www.coinapi.io/). Or you can use my API key, which is already in the code.
+1. Create `local/` directory in the root directory of the project. This is where the database file will be stored.
+2. Get API key from [CoinAPI](https://www.coinapi.io/). Or you can use my API key, which you can find in `config/config.go`.
 3. Sign up for [MailGun](https://www.mailgun.com/) account. You will need to verify your domain and get your API key.
-4. Create a `.env` file in the root directory of the project and add the following variables:
+4. Fill `.env` file in the root directory of the project with the following variables:
 
 ```
 GSES_COIN_API_KEY=<your_coin_api_key>
@@ -25,6 +24,15 @@ GSES_MAILGUN_DOMAIN=<your_mailgun_domain>
 GSES_MAILGUN_API_KEY=<your_mailgun_api_key>
 GSES_MAILGUN_FROM=<your_mailgun_from_email>
 ```
+
+### Run locally
+
+1. Run `make run` to start the server locally.
+
+### Run in Docker
+
+1. Run `make docker-build` to build the docker image.
+2. Run `make docker-run` to start the server in docker container.
 
 ### List of endpoints:
 
