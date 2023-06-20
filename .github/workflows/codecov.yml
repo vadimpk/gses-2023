@@ -14,7 +14,5 @@ jobs:
           go-version: '1.18'
       - name: Run coverage
         run: go test ./... -race -coverprofile=coverage.txt -covermode=atomic
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
       - name: Coveralls
         uses: coverallsapp/github-action@v2
